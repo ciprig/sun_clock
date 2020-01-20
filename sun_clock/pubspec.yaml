@@ -10,6 +10,8 @@ dependencies:
     sdk: flutter
   flutter_clock_helper:
     path: ../flutter_clock_helper
+  suncalc:
+    path: third_party
   cupertino_icons: ^0.1.2
 
 dev_dependencies:
@@ -18,7 +20,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  fonts:
-    - family: PressStart2P
-      fonts:
-        - asset: third_party/PressStart2P-Regular.ttf

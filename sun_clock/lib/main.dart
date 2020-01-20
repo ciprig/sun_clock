@@ -9,7 +9,7 @@ import 'package:flutter_clock_helper/model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'digital_clock.dart';
+import 'sun_clock.dart';
 
 void main() {
   // A temporary measure until Platform supports web and TargetPlatform supports
@@ -28,7 +28,5 @@ void main() {
   //  - A model (provided to you by [ClockModel])
   // For more information, see the flutter_clock_helper package.
   //
-  // Your job is to edit [DigitalClock], or replace it with your
-  // own clock widget. (Look in digital_clock.dart for more details!)
-  runApp(ClockCustomizer((ClockModel model) => DigitalClock(model)));
+  runApp(ClockCustomizer((ClockModel model) => SunClock(model)));
 }
