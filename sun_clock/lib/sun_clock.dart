@@ -26,16 +26,6 @@ final _darkTheme = {
   _Element.skyBottom: Color(0xFF928DC7)
 };
 
-final showSeconds = false;
-final timerDuration = showSeconds ? Duration(seconds: 1) : Duration(minutes: 1);
-final double sunDiameter = 100;
-final double moonDiameter = 99;
-
-final hasShadow = false;
-final sunShadow = hasShadow ? kElevationToShadow[8] : null;
-final moonShadow = hasShadow ? lightShadow() : null;
-final textShadow = hasShadow ? kElevationToShadow[24] : null;
-
 class SunClock extends StatefulWidget {
   const SunClock(this.model);
 
@@ -50,6 +40,21 @@ class _SunClockState extends State<SunClock> {
   Timer _timer;
 
   Map<String, dynamic> _sunTimes = Map();
+
+  Map<_Element, Color> colors = _lightTheme;
+
+  final showSeconds = false;
+
+  get timerDuration =>
+      showSeconds ? Duration(seconds: 1) : Duration(minutes: 1);
+
+  final hasShadow = false;
+
+  get sunShadow => hasShadow ? kElevationToShadow[8] : null;
+
+  get moonShadow => hasShadow ? lightShadow() : null;
+
+  get textShadow => hasShadow ? kElevationToShadow[24] : null;
 
   @override
   void initState() {
@@ -66,6 +71,13 @@ class _SunClockState extends State<SunClock> {
       oldWidget.model.removeListener(_updateModel);
       widget.model.addListener(_updateModel);
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    colors = Theme.of(context).brightness == Brightness.light
+        ? _lightTheme
+        : _darkTheme;
   }
 
   @override
@@ -89,7 +101,7 @@ class _SunClockState extends State<SunClock> {
 //      final now = DateTime.now();
 //      final hour = (now.second * 24 / 60).truncate();
 //      final minute = (now.second * 24 - hour * 60);
-//      _dateTime = DateTime(now.year, 6, 15, hour, minute, now.second);
+//      _dateTime = DateTime(now.year, 4, 15, hour, minute, now.second);
 
       _sunTimes = SunCalc().getTimes(_dateTime, 46.7712, 23.6236);
       // Update once per minute. If you want to update every second, use the
@@ -127,10 +139,10 @@ class _SunClockState extends State<SunClock> {
         child: Stack(
           alignment: AlignmentDirectional.bottomCenter,
           children: <Widget>[
-            _buildSun(constraints.maxWidth, constraints.maxHeight, colors),
+            _buildSun(constraints.maxWidth, constraints.maxHeight),
             _buildMoon(constraints.maxWidth, constraints.maxHeight),
             _buildLandscape(constraints.maxWidth, constraints.maxHeight),
-            _buildInfo(constraints.maxWidth, constraints.maxHeight, colors),
+            _buildInfo(constraints.maxWidth, constraints.maxHeight),
           ],
         ),
       ),
@@ -150,9 +162,10 @@ class _SunClockState extends State<SunClock> {
     );
   }
 
-  Widget _buildSun(
-      double maxWidth, double maxHeight, Map<_Element, Color> colors) {
+  Widget _buildSun(double maxWidth, double maxHeight) {
     final position = SunCalc().getPosition(_dateTime, 46.7712, 23.6236);
+
+    final sunDiameter = maxWidth / 8;
 
     final width = maxWidth - sunDiameter;
     final height = maxHeight - sunDiameter;
@@ -180,6 +193,7 @@ class _SunClockState extends State<SunClock> {
   Widget _buildMoon(double maxWidth, double maxHeight) {
     final position = SunCalc().getMoonPosition(_dateTime, 46.7712, 23.6236);
 
+    final moonDiameter = maxWidth / 9;
     final width = maxWidth - moonDiameter;
     final height = maxHeight - moonDiameter;
 
@@ -214,8 +228,7 @@ class _SunClockState extends State<SunClock> {
     );
   }
 
-  Widget _buildInfo(
-      double maxWidth, double maxHeight, Map<_Element, Color> colors) {
+  Widget _buildInfo(double maxWidth, double maxHeight) {
     final time = DateFormat((widget.model.is24HourFormat ? 'HH' : 'hh') +
             (showSeconds ? ":mm:ss" : ":mm"))
         .format(_dateTime);
@@ -224,27 +237,29 @@ class _SunClockState extends State<SunClock> {
         color: colors[_Element.text],
         fontFamily: 'Roboto',
         fontWeight: FontWeight.w700,
-        fontSize: maxHeight / 6,
+        fontSize: maxWidth / 8,
         shadows: textShadow);
 
+    final lineHeight = maxHeight / 128;
+
     return Positioned(
-        bottom: 24,
+        bottom: maxHeight / 32,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(time, style: timeStyle),
             Container(
-              width: maxWidth - 96 * 2,
+              width: maxWidth * 0.8,
               color: colors[_Element.text],
-              height: 4,
+              height: lineHeight,
             ),
-            _buildInfoDetailsRow(context, colors),
+            _buildInfoDetailsRow(context, maxWidth, maxHeight),
           ],
         ));
   }
 
   Widget _buildInfoDetailsRow(
-      BuildContext context, Map<_Element, Color> colors) {
+      BuildContext context, double maxWidth, double maxHeight) {
     final Locale locale = Localizations.localeOf(context);
     final String strLocale = "${locale.languageCode}_${locale.countryCode}";
 
@@ -255,15 +270,21 @@ class _SunClockState extends State<SunClock> {
     final detailStyle = TextStyle(
         color: colors[_Element.text],
         fontFamily: 'Roboto',
-        fontWeight: FontWeight.w500,
-        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        fontSize: maxWidth / 40,
         shadows: kElevationToShadow[24]);
 
-    const padding = EdgeInsets.only(left: 32, top: 16, right: 32, bottom: 16);
+    final lineHeight = maxHeight / 128;
+
+    final padding = EdgeInsets.only(
+        left: maxWidth / 32,
+        top: maxHeight / 32,
+        right: maxWidth / 32,
+        bottom: maxHeight / 32);
 
     final dot = Container(
-      width: 4,
-      height: 4,
+      width: lineHeight,
+      height: lineHeight,
       color: colors[_Element.text],
     );
 
@@ -281,7 +302,7 @@ class _SunClockState extends State<SunClock> {
             dot,
             Container(
               padding: padding,
-              child: _weatherDetailsRow(colors),
+              child: _weatherDetailsRow(maxWidth, maxHeight),
             ),
           ],
         ),
@@ -289,22 +310,25 @@ class _SunClockState extends State<SunClock> {
     );
   }
 
-  Widget _weatherDetailsRow(Map colors) {
+  Widget _weatherDetailsRow(double maxWidth, double maxHeight) {
     final String temperatureMinMaxString =
         "${widget.model.highString}/${widget.model.lowString}";
 
+    final iconSize = maxWidth / 40;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        Text("${widget.model.temperatureString} | "),
+        Text("${widget.model.temperatureString} "),
         Icon(
           Icons.arrow_upward,
           color: colors[_Element.text],
+          size: iconSize,
         ),
         Text(temperatureMinMaxString),
         Icon(
           Icons.arrow_downward,
           color: colors[_Element.text],
+          size: iconSize,
         ),
       ],
     );
