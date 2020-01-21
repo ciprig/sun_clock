@@ -13,10 +13,14 @@ dependencies:
   suncalc:
     path: third_party
   cupertino_icons: ^0.1.2
+  intl: ^0.16.1
+  flutter_svg: ^0.16.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
 flutter:
+  assets:
+    - assets/
   uses-material-design: true
