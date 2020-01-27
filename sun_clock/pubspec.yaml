@@ -1,5 +1,5 @@
-name: digital_clock
-description: Digital clock.
+name: sun_clock
+description: Sun Clock.
 version: 1.0.0+1
 
 environment:
@@ -10,8 +10,6 @@ dependencies:
     sdk: flutter
   flutter_clock_helper:
     path: ../flutter_clock_helper
-  suncalc:
-    path: third_party
   cupertino_icons: ^0.1.2
   intl: ^0.16.1
   flutter_svg: ^0.16.1

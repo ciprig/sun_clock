@@ -191,13 +191,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
-  suncalc:
-    dependency: "direct main"
-    description:
-      path: third_party
-      relative: true
-    source: path
-    version: "0.0.0"
   term_glyph:
     dependency: transitive
     description:
