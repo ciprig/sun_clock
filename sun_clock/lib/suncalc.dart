@@ -176,7 +176,7 @@ class SunCalc {
 
   /// calculates sun times for a given date, latitude/longitude, and, optionally,
   /// the observer height (in meters) relative to the horizon
-  Map<String,dynamic> getTimes(DateTime date,double lat,double lng, {double height = 0}) {
+  Map<String,DateTime> getTimes(DateTime date,double lat,double lng, {double height = 0}) {
     var lw = _rad * -lng,
         phi = _rad * lat,
         dh = _observerAngle(height),

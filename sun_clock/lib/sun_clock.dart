@@ -9,6 +9,7 @@ import 'package:flutter_clock_helper/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'dart:developer' as developer;
 
 import 'suncalc.dart';
 
@@ -39,7 +40,9 @@ class _SunClockState extends State<SunClock> {
   DateTime _dateTime = DateTime.now();
   Timer _timer;
 
-  Map<String, dynamic> _sunTimes = Map();
+
+
+  Map<String, DateTime> _sunTimes = Map();
 
   Map<_Element, Color> colors = _lightTheme;
 
@@ -48,7 +51,7 @@ class _SunClockState extends State<SunClock> {
   get timerDuration =>
       showSeconds ? Duration(seconds: 1) : Duration(minutes: 1);
 
-  final hasShadow = false;
+  final hasShadow = true;
 
   get sunShadow => hasShadow ? kElevationToShadow[8] : null;
 
@@ -59,6 +62,8 @@ class _SunClockState extends State<SunClock> {
   @override
   void initState() {
     super.initState();
+    developer.log("time ${DateTime.now()} ${DateTime.now().timeZoneName}  ${DateTime.now().timeZoneOffset}");
+
     widget.model.addListener(_updateModel);
     _updateTime();
     _updateModel();
@@ -173,18 +178,23 @@ class _SunClockState extends State<SunClock> {
     final left = width / 2 * (1 + sin(position.azimuth));
 
     final bottom = height * sin(position.altitude);
+    final start = _sunTimes["sunrise"];
+    final end = _sunTimes["sunsetStart"];
+
+
+    final sunColor =  _dateTime.isAfter(start)&&_dateTime.isBefore(end)?Colors.amber:Colors.red;// colors[_Element.text] ;
 
     return AnimatedPositioned(
       duration: timerDuration,
       bottom: bottom,
       left: left,
       child: AnimatedContainer(
-        duration: Duration(minutes: 1),
+        duration: timerDuration * 15,
         width: sunDiameter,
         height: sunDiameter,
         decoration: BoxDecoration(
             boxShadow: sunShadow,
-            color: colors[_Element.text],
+            color: sunColor,
             shape: BoxShape.circle),
       ),
     );
